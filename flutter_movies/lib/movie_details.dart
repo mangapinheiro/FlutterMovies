@@ -54,10 +54,8 @@ class MovieDetailState extends State<MovieDetail> {
                     child: Row(
                       children: <Widget>[
                         Expanded(
-                            child: Text(
-                          movie['title'],
-                          style: TextStyle(color: Colors.white, fontSize: 30, fontFamily: 'Arvo'),
-                        )),
+                            child: Text(movie['title'],
+                                style: TextStyle(color: Colors.white, fontSize: 30, fontFamily: 'Arvo'))),
                         Text(
                           '${movie['vote_average']}/10',
                           style: TextStyle(color: Colors.white, fontSize: 20, fontFamily: 'Arvo'),
@@ -65,54 +63,47 @@ class MovieDetailState extends State<MovieDetail> {
                       ],
                     ),
                   ),
-                  new Text(movie['overview'],style: new TextStyle(color: Colors.white,fontFamily: 'Arvo')),
-                  new Padding(padding: const EdgeInsets.all(10.0)),
-                  new Row(
+                  Text(movie['overview'], style: TextStyle(color: Colors.white, fontFamily: 'Arvo')),
+                  Padding(padding: const EdgeInsets.all(10.0)),
+                  Row(
                     children: <Widget>[
-                      new Expanded(
-                          child: new Container(
-                            width: 150.0,
-                            height: 60.0,
-                            alignment: Alignment.center,
-                            child: new Text(
-                              'Rate Movie',
-                              style: new TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Arvo',
-                                  fontSize: 20.0),
-                            ),
-                            decoration: new BoxDecoration(
-                                borderRadius: new BorderRadius.circular(10.0),
-                                color: const Color(0xaa3C3261)),
-                          )),
-                      new Padding(
+                      Expanded(
+                          child: Container(
+                        width: 150.0,
+                        height: 60.0,
+                        alignment: Alignment.center,
+                        child: Text('Rate Movie',
+                            style: TextStyle(color: Colors.white, fontFamily: 'Arvo', fontSize: 20.0)),
+                        decoration:
+                            BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: const Color(0xaa3C3261)),
+                      )),
+                      Padding(
                         padding: const EdgeInsets.all(16.0),
-                        child: new Container(
+                        child: Container(
                           padding: const EdgeInsets.all(16.0),
                           alignment: Alignment.center,
-                          child: new Icon(
+                          child: Icon(
                             Icons.share,
                             color: Colors.white,
                           ),
-                          decoration: new BoxDecoration(
-                              borderRadius: new BorderRadius.circular(10.0),
-                              color: const Color(0xaa3C3261)),
+                          decoration:
+                              BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: const Color(0xaa3C3261)),
                         ),
                       ),
-                      new Padding(
+                      Padding(
                         padding: const EdgeInsets.all(0.0),
-                        child: new InkWell(
+                        child: InkWell(
                             onTap: () {},
-                            child: new Container(
+                            child: Container(
                               padding: const EdgeInsets.all(16.0),
                               alignment: Alignment.center,
-                              child: new Icon(Icons.bookmark,color: Colors.white,),
-                              decoration: new BoxDecoration(
-                                  borderRadius: new BorderRadius.circular(10.0),
-                                  color: const Color(0xaa3C3261)
+                              child: Icon(
+                                Icons.bookmark,
+                                color: Colors.white,
                               ),
-                            )
-                        ),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.0), color: const Color(0xaa3C3261)),
+                            )),
                       ),
                     ],
                   )
