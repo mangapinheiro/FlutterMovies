@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 class MovieList extends StatefulWidget {
   @override
   MovieListState createState() {
-    return new MovieListState();
+    return MovieListState();
   }
 }
 
@@ -25,44 +25,44 @@ class MovieListState extends State<MovieList> {
 
   Widget build(BuildContext context) {
     getData();
-    return new Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
-      appBar: new AppBar(
+      appBar: AppBar(
         elevation: 0.3,
         centerTitle: true,
         backgroundColor: Colors.white,
-        leading: new Icon(
+        leading: Icon(
           Icons.arrow_back,
           color: mainColor,
         ),
-        title: new Text(
+        title: Text(
           'Movies',
-          style: new TextStyle(color: mainColor, fontFamily: 'Arvo', fontWeight: FontWeight.bold),
+          style: TextStyle(color: mainColor, fontFamily: 'Arvo', fontWeight: FontWeight.bold),
         ),
         actions: <Widget>[
-          new Icon(
+          Icon(
             Icons.menu,
             color: mainColor,
           )
         ],
       ),
-      body: new Padding(
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: new Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            new MovieTitle(mainColor),
-            new Expanded(
-                child: new ListView.builder(
+            MovieTitle(mainColor),
+            Expanded(
+                child: ListView.builder(
               itemCount: movies == null ? 0 : movies.length,
               itemBuilder: (context, index) {
                 return FlatButton(
-                  child: new MovieCell(movies, index),
+                  child: MovieCell(movies, index),
                   padding: const EdgeInsets.all(0),
                   color: Colors.white,
                   onPressed: (){
-                    Navigator.push(context, new MaterialPageRoute(builder: (context){
-                      return new MovieDetail(movies[index]);
+                    Navigator.push(context, MaterialPageRoute(builder: (context){
+                      return MovieDetail(movies[index]);
                     }));
                   },
                 );
@@ -91,42 +91,42 @@ class MovieCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Column(
+    return Column(
       children: <Widget>[
-        new Row(
+        Row(
           children: <Widget>[
-            new Padding(
+            Padding(
               padding: const EdgeInsets.all(0.0),
-              child: new Container(
+              child: Container(
                 margin: const EdgeInsets.all(16.0),
-                child: new Container(
+                child: Container(
                   width: 70.0,
                   height: 70.0,
                 ),
-                decoration: new BoxDecoration(
-                  borderRadius: new BorderRadius.circular(10.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
                   color: Colors.grey,
-                  image: new DecorationImage(
-                      image: new NetworkImage(imageUrl + movies[index]['poster_path']), fit: BoxFit.cover),
-                  boxShadow: [new BoxShadow(color: mainColor, blurRadius: 5.0, offset: new Offset(2.0, 5.0))],
+                  image: DecorationImage(
+                      image: NetworkImage(imageUrl + movies[index]['poster_path']), fit: BoxFit.cover),
+                  boxShadow: [BoxShadow(color: mainColor, blurRadius: 5.0, offset: Offset(2.0, 5.0))],
                 ),
               ),
             ),
-            new Expanded(
-                child: new Container(
+            Expanded(
+                child: Container(
               margin: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-              child: new Column(
+              child: Column(
                 children: [
-                  new Text(
+                  Text(
                     movies[index]['title'],
-                    style: new TextStyle(
+                    style: TextStyle(
                         fontSize: 20.0, fontFamily: 'Arvo', fontWeight: FontWeight.bold, color: mainColor),
                   ),
-                  new Padding(padding: const EdgeInsets.all(2.0)),
-                  new Text(
+                  Padding(padding: const EdgeInsets.all(2.0)),
+                  Text(
                     movies[index]['overview'],
                     maxLines: 3,
-                    style: new TextStyle(color: const Color(0xff8785A4), fontFamily: 'Arvo'),
+                    style: TextStyle(color: const Color(0xff8785A4), fontFamily: 'Arvo'),
                   )
                 ],
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,7 +134,7 @@ class MovieCell extends StatelessWidget {
             )),
           ],
         ),
-        new Container(
+        Container(
           width: 300.0,
           height: 0.5,
           color: const Color(0xD2D2E1ff),
@@ -152,11 +152,11 @@ class MovieTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Padding(
+    return Padding(
       padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
-      child: new Text(
+      child: Text(
         'Top Rated',
-        style: new TextStyle(fontSize: 40.0, color: mainColor, fontWeight: FontWeight.bold, fontFamily: 'Arvo'),
+        style: TextStyle(fontSize: 40.0, color: mainColor, fontWeight: FontWeight.bold, fontFamily: 'Arvo'),
         textAlign: TextAlign.left,
       ),
     );

@@ -93,17 +93,18 @@ class MovieDetailState extends State<MovieDetail> {
                       Padding(
                         padding: const EdgeInsets.all(0.0),
                         child: InkWell(
-                            onTap: () {},
-                            child: Container(
-                              padding: const EdgeInsets.all(16.0),
-                              alignment: Alignment.center,
-                              child: Icon(
-                                Icons.bookmark,
-                                color: Colors.white,
-                              ),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10.0), color: const Color(0xaa3C3261)),
-                            )),
+                          onTap: () {},
+                          child: Container(
+                            padding: const EdgeInsets.all(16.0),
+                            alignment: Alignment.center,
+                            child: Icon(
+                              Icons.bookmark,
+                              color: Colors.white,
+                            ),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0), color: const Color(0xaa3C3261)),
+                          ),
+                        ),
                       ),
                     ],
                   )
