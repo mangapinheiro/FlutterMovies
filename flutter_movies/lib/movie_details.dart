@@ -40,9 +40,15 @@ class MovieDetailState extends State<MovieDetail> {
                 children: <Widget>[
                   Container(
                     alignment: Alignment.center,
-                    child: Container(
-                      width: 400,
-                      height: 400,
+                    child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: <Widget>[
+                        Container(
+                          width: 400,
+                          height: 400,
+                        ),
+                        FavoriteWidget(),
+                      ],
                     ),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
@@ -114,6 +120,65 @@ class MovieDetailState extends State<MovieDetail> {
           )
         ],
       ),
+    );
+  }
+}
+
+class FavoriteWidget extends StatefulWidget {
+  @override
+  _FavoriteWidgetState createState() => _FavoriteWidgetState();
+}
+
+class _FavoriteWidgetState extends State<FavoriteWidget> {
+  bool _isFavorite = true;
+  int _favoriteCount = 41;
+
+  void _toggleFavorite() {
+    setState(() {
+      // If the lake is currently favorited, unfavorite it.
+      if (_isFavorite) {
+        _favoriteCount -= 1;
+        _isFavorite = false;
+        // Otherwise, favorite it.
+      } else {
+        _favoriteCount += 1;
+        _isFavorite = true;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.centerRight,
+      fit: StackFit.loose,
+      children: <Widget>[
+        BackdropFilter(
+          filter: ui.ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+          child: Container(
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.white.withOpacity(0.3)),
+            padding: EdgeInsets.only(left: 20),
+            margin: EdgeInsets.only(right: 8, bottom: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(
+                  width: 18,
+                  child: Text(
+                    '$_favoriteCount',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                IconButton(
+                  icon: (_isFavorite ? Icon(Icons.star) : Icon(Icons.star_border)),
+                  color: Colors.white,
+                  onPressed: _toggleFavorite,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
