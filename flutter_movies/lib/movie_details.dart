@@ -149,36 +149,30 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.centerRight,
-      fit: StackFit.loose,
-      children: <Widget>[
-        BackdropFilter(
-          filter: ui.ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-          child: Container(
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.white.withOpacity(0.3)),
-            padding: EdgeInsets.only(left: 20),
-            margin: EdgeInsets.only(right: 8, bottom: 8),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                SizedBox(
-                  width: 18,
-                  child: Text(
-                    '$_favoriteCount',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                IconButton(
-                  icon: (_isFavorite ? Icon(Icons.star) : Icon(Icons.star_border)),
-                  color: Colors.white,
-                  onPressed: _toggleFavorite,
-                ),
-              ],
+    return BackdropFilter(
+      filter: ui.ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+      child: Container(
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.white.withOpacity(0.3)),
+        padding: EdgeInsets.only(left: 20),
+        margin: EdgeInsets.only(right: 8, bottom: 8),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            SizedBox(
+              width: 18,
+              child: Text(
+                '$_favoriteCount',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
-          ),
+            IconButton(
+              icon: (_isFavorite ? Icon(Icons.star) : Icon(Icons.star_border)),
+              color: Colors.white,
+              onPressed: _toggleFavorite,
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
