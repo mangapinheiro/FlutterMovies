@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/movie_details.dart';
+import 'package:flutter_movies/serializers.dart';
+import 'package:flutter_movies/src/movie.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -19,7 +21,10 @@ class MovieListState extends State<MovieList> {
     var data = await getJson();
 
     setState(() {
-      movies = data['results'];
+      var moviesJson = data['results'] as List;
+      movies = moviesJson.map((json) {
+        return standardSerializers.deserializeWith(Movie.serializer, json);
+      }).toList();
     });
   }
 
@@ -60,9 +65,9 @@ class MovieListState extends State<MovieList> {
                   child: MovieCell(movies, index),
                   padding: const EdgeInsets.all(0),
                   color: Colors.white,
-                  onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context){
-                      return MovieDetail(movies[index]);
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return MovieDetail(movies[index], index);
                     }));
                   },
                 );
@@ -71,6 +76,11 @@ class MovieListState extends State<MovieList> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.search),
+        onPressed: () {},
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -82,7 +92,7 @@ class MovieListState extends State<MovieList> {
 }
 
 class MovieCell extends StatelessWidget {
-  final movies;
+  final List<Movie> movies;
   final index;
   final Color mainColor = const Color(0xff3C3261);
   final imageUrl = 'https://image.tmdb.org/t/p/w500/';
@@ -97,18 +107,21 @@ class MovieCell extends StatelessWidget {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(0.0),
-              child: Container(
-                margin: const EdgeInsets.all(16.0),
+              child: Hero(
+                tag: 'Thumbnail$index',
                 child: Container(
-                  width: 70.0,
-                  height: 70.0,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                  color: Colors.grey,
-                  image: DecorationImage(
-                      image: NetworkImage(imageUrl + movies[index]['poster_path']), fit: BoxFit.cover),
-                  boxShadow: [BoxShadow(color: mainColor, blurRadius: 5.0, offset: Offset(2.0, 5.0))],
+                  margin: const EdgeInsets.all(16.0),
+                  child: Container(
+                    width: 70.0,
+                    height: 70.0,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    color: Colors.grey,
+                    image:
+                        DecorationImage(image: NetworkImage(imageUrl + movies[index].posterPath), fit: BoxFit.cover),
+                    boxShadow: [BoxShadow(color: mainColor, blurRadius: 5.0, offset: Offset(2.0, 5.0))],
+                  ),
                 ),
               ),
             ),
@@ -118,13 +131,12 @@ class MovieCell extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    movies[index]['title'],
-                    style: TextStyle(
-                        fontSize: 20.0, fontFamily: 'Arvo', fontWeight: FontWeight.bold, color: mainColor),
+                    movies[index].title,
+                    style: TextStyle(fontSize: 20.0, fontFamily: 'Arvo', fontWeight: FontWeight.bold, color: mainColor),
                   ),
                   Padding(padding: const EdgeInsets.all(2.0)),
                   Text(
-                    movies[index]['overview'],
+                    movies[index].overview,
                     maxLines: 3,
                     style: TextStyle(color: const Color(0xff8785A4), fontFamily: 'Arvo'),
                   )
