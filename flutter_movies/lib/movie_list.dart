@@ -1,12 +1,19 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/movie_details.dart';
 import 'package:flutter_movies/serializers.dart';
 import 'package:flutter_movies/src/movie.dart';
+import 'package:flutter_movies/src/movie_list_bloc.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class MovieList extends StatefulWidget {
+  final MovieListBloc bloc;
+
+  MovieList(this.bloc);
+
   @override
   MovieListState createState() {
     return MovieListState();
@@ -17,19 +24,7 @@ class MovieListState extends State<MovieList> {
   var movies;
   Color mainColor = const Color(0xff3C3261);
 
-  void getData() async {
-    var data = await getJson();
-
-    setState(() {
-      var moviesJson = data['results'] as List;
-      movies = moviesJson.map((json) {
-        return standardSerializers.deserializeWith(Movie.serializer, json);
-      }).toList();
-    });
-  }
-
   Widget build(BuildContext context) {
-    getData();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -58,23 +53,37 @@ class MovieListState extends State<MovieList> {
           children: <Widget>[
             MovieTitle(mainColor),
             Expanded(
-                child: ListView.builder(
-              itemCount: movies == null ? 0 : movies.length,
-              itemBuilder: (context, index) {
-                return FlatButton(
-                  child: MovieCell(movies, index),
-                  padding: const EdgeInsets.all(0),
-                  color: Colors.white,
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return MovieDetail(movies[index], index);
-                    }));
-                  },
-                );
-              },
-            ))
+                child: StreamBuilder<UnmodifiableListView<Movie>>(
+                  stream: widget.bloc.movies,
+                  initialData: UnmodifiableListView<Movie>([]),
+                  builder: (context, snapshot) =>
+                      ListView(
+                        children: snapshot.data.map((movie) {
+                          return _buildItem(movie);
+                        }).toList(),
+                      ),
+                ))
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            title: Text('New Releases'),
+            icon: Icon(Icons.new_releases),
+          ),
+          BottomNavigationBarItem(
+            title: Text('Favorites'),
+            icon: Icon(Icons.favorite),
+          )
+        ],
+        onTap: (index) {
+          if (index == 0) {
+            widget.bloc.moviesType.add(MoviesType.newReleases);
+          } else {
+            widget.bloc.moviesType.add(MoviesType.favorites);
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.search),
@@ -84,20 +93,26 @@ class MovieListState extends State<MovieList> {
     );
   }
 
-  Future<Map> getJson() async {
-    var url = 'http://api.themoviedb.org/3/discover/movie?api_key=aa0d387e519b001387da127a37f0acd2';
-    http.Response response = await http.get(url);
-    return json.decode(response.body);
+  Widget _buildItem(movie) {
+    return FlatButton(
+      child: MovieCell(movie),
+      padding: const EdgeInsets.all(0),
+      color: Colors.white,
+      onPressed: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return MovieDetail(movie);
+        }));
+      },
+    );
   }
 }
 
 class MovieCell extends StatelessWidget {
-  final List<Movie> movies;
-  final index;
+  final Movie movie;
   final Color mainColor = const Color(0xff3C3261);
   final imageUrl = 'https://image.tmdb.org/t/p/w500/';
 
-  MovieCell(this.movies, this.index);
+  MovieCell(this.movie);
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +123,7 @@ class MovieCell extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(0.0),
               child: Hero(
-                tag: 'Thumbnail$index',
+                tag: movie.posterPath,
                 child: Container(
                   margin: const EdgeInsets.all(16.0),
                   child: Container(
@@ -118,8 +133,7 @@ class MovieCell extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
                     color: Colors.grey,
-                    image:
-                        DecorationImage(image: NetworkImage(imageUrl + movies[index].posterPath), fit: BoxFit.cover),
+                    image: DecorationImage(image: NetworkImage(imageUrl + movie.posterPath), fit: BoxFit.cover),
                     boxShadow: [BoxShadow(color: mainColor, blurRadius: 5.0, offset: Offset(2.0, 5.0))],
                   ),
                 ),
@@ -127,23 +141,24 @@ class MovieCell extends StatelessWidget {
             ),
             Expanded(
                 child: Container(
-              margin: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-              child: Column(
-                children: [
-                  Text(
-                    movies[index].title,
-                    style: TextStyle(fontSize: 20.0, fontFamily: 'Arvo', fontWeight: FontWeight.bold, color: mainColor),
+                  margin: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+                  child: Column(
+                    children: [
+                      Text(
+                        movie.title,
+                        style: TextStyle(
+                            fontSize: 20.0, fontFamily: 'Arvo', fontWeight: FontWeight.bold, color: mainColor),
+                      ),
+                      Padding(padding: const EdgeInsets.all(2.0)),
+                      Text(
+                        movie.overview,
+                        maxLines: 3,
+                        style: TextStyle(color: const Color(0xff8785A4), fontFamily: 'Arvo'),
+                      )
+                    ],
+                    crossAxisAlignment: CrossAxisAlignment.start,
                   ),
-                  Padding(padding: const EdgeInsets.all(2.0)),
-                  Text(
-                    movies[index].overview,
-                    maxLines: 3,
-                    style: TextStyle(color: const Color(0xff8785A4), fontFamily: 'Arvo'),
-                  )
-                ],
-                crossAxisAlignment: CrossAxisAlignment.start,
-              ),
-            )),
+                )),
           ],
         ),
         Container(

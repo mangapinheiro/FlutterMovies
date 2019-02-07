@@ -1,9 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_movies/src/movie_list_bloc.dart';
 import 'movie_list.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  final movieListBloc = MovieListBloc();
+  runApp(MyApp(bloc: movieListBloc));
+}
 
 class MyApp extends StatelessWidget {
+  final MovieListBloc bloc;
+
+  MyApp({
+    Key key,
+    this.bloc,
+  }) : super(key: key);
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -21,7 +32,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MovieList(),
+      home: MovieList(this.bloc),
     );
   }
 }
