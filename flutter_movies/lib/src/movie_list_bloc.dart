@@ -13,6 +13,9 @@ class MovieListBloc {
   Stream<UnmodifiableListView<Movie>> get movies => _moviesSubject.stream;
   final _moviesSubject = BehaviorSubject<UnmodifiableListView<Movie>>();
 
+  Stream<bool> get isLoading => _isLoadingSubject.stream;
+  final _isLoadingSubject = BehaviorSubject<bool>(seedValue: false);
+
   Sink<MoviesType> get moviesType => _moviesTypeController.sink;
   final _moviesTypeController = BehaviorSubject<MoviesType>();
 
@@ -32,8 +35,11 @@ class MovieListBloc {
     });
   }
 
-  void _loadItems(String resource) {
-    _updateMovies(resource).then((_) => _moviesSubject.add(UnmodifiableListView(_movies)));
+  void _loadItems(String resource) async {
+    _isLoadingSubject.add(true);
+    await _updateMovies(resource);
+    _moviesSubject.add(UnmodifiableListView(_movies));
+    _isLoadingSubject.add(false);
   }
 
   Future<Null> _updateMovies(String resource) async {

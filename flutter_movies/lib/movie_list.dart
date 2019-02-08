@@ -24,6 +24,8 @@ class MovieListState extends State<MovieList> {
   var movies;
   Color mainColor = const Color(0xff3C3261);
 
+  int _currentIndex = 0;
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -31,10 +33,7 @@ class MovieListState extends State<MovieList> {
         elevation: 0.3,
         centerTitle: true,
         backgroundColor: Colors.white,
-        leading: Icon(
-          Icons.arrow_back,
-          color: mainColor,
-        ),
+        leading: LoadingInfo(widget.bloc.isLoading),
         title: Text(
           'Movies',
           style: TextStyle(color: mainColor, fontFamily: 'Arvo', fontWeight: FontWeight.bold),
@@ -54,19 +53,19 @@ class MovieListState extends State<MovieList> {
             MovieTitle(mainColor),
             Expanded(
                 child: StreamBuilder<UnmodifiableListView<Movie>>(
-                  stream: widget.bloc.movies,
-                  initialData: UnmodifiableListView<Movie>([]),
-                  builder: (context, snapshot) =>
-                      ListView(
-                        children: snapshot.data.map((movie) {
-                          return _buildItem(movie);
-                        }).toList(),
-                      ),
-                ))
+              stream: widget.bloc.movies,
+              initialData: UnmodifiableListView<Movie>([]),
+              builder: (context, snapshot) => ListView(
+                    children: snapshot.data.map((movie) {
+                      return _buildItem(movie);
+                    }).toList(),
+                  ),
+            ))
           ],
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
         items: [
           BottomNavigationBarItem(
             title: Text('New Releases'),
@@ -83,6 +82,9 @@ class MovieListState extends State<MovieList> {
           } else {
             widget.bloc.moviesType.add(MoviesType.favorites);
           }
+          setState(() {
+            _currentIndex = index;
+          });
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -104,6 +106,32 @@ class MovieListState extends State<MovieList> {
         }));
       },
     );
+  }
+}
+
+class LoadingInfo extends StatelessWidget {
+  Stream<bool> _isLoading;
+
+  LoadingInfo(
+    this._isLoading, {
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: _isLoading,
+      initialData: false,
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if (snapshot.data) {
+          return Transform.scale(scale: 0.5, child: CircularProgressIndicator());
+        } else {
+          return Container();
+        }
+
+      },
+    );
+
   }
 }
 
@@ -141,24 +169,23 @@ class MovieCell extends StatelessWidget {
             ),
             Expanded(
                 child: Container(
-                  margin: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-                  child: Column(
-                    children: [
-                      Text(
-                        movie.title,
-                        style: TextStyle(
-                            fontSize: 20.0, fontFamily: 'Arvo', fontWeight: FontWeight.bold, color: mainColor),
-                      ),
-                      Padding(padding: const EdgeInsets.all(2.0)),
-                      Text(
-                        movie.overview,
-                        maxLines: 3,
-                        style: TextStyle(color: const Color(0xff8785A4), fontFamily: 'Arvo'),
-                      )
-                    ],
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              margin: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+              child: Column(
+                children: [
+                  Text(
+                    movie.title,
+                    style: TextStyle(fontSize: 20.0, fontFamily: 'Arvo', fontWeight: FontWeight.bold, color: mainColor),
                   ),
-                )),
+                  Padding(padding: const EdgeInsets.all(2.0)),
+                  Text(
+                    movie.overview,
+                    maxLines: 3,
+                    style: TextStyle(color: const Color(0xff8785A4), fontFamily: 'Arvo'),
+                  )
+                ],
+                crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+            )),
           ],
         ),
         Container(
