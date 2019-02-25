@@ -4,8 +4,15 @@ import 'dart:convert';
 
 import 'package:flutter_movies/serializers.dart';
 import 'package:flutter_movies/src/movie.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:http/http.dart' as http;
+import 'package:rxdart/rxdart.dart';
+
+abstract class MovieListEvent {}
+
+class MovieListFilterEvent extends MovieListEvent {
+  final String query;
+  MovieListFilterEvent({this.query});
+}
 
 enum MoviesType { newReleases, favorites }
 
@@ -33,6 +40,13 @@ class MovieListBloc {
           break;
       }
     });
+
+    _movieListEvents.stream.listen((event) {
+      if (event is MovieListFilterEvent) {
+        // TODO: event.query
+        print(event.query);
+      }
+    });
   }
 
   void _loadItems(String resource) async {
@@ -54,5 +68,14 @@ class MovieListBloc {
     }).toList();
 
     _movies = movies;
+  }
+
+  StreamController<MovieListEvent> _movieListEvents = StreamController();
+  Sink<MovieListEvent> get moviesEvent => _movieListEvents.sink;
+
+  void dispose() {
+    _movieListEvents.close();
+    _moviesTypeController.close();
+    _isLoadingSubject.close();
   }
 }

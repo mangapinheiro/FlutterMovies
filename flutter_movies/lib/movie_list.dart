@@ -1,19 +1,14 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/movie_details.dart';
-import 'package:flutter_movies/serializers.dart';
 import 'package:flutter_movies/src/movie.dart';
-import 'package:flutter_movies/src/movie_list_bloc.dart';
-import 'dart:async';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:flutter_movies/src/movie_cell.dart';
+import 'package:flutter_movies/src/movies_search.dart';
+import 'package:flutter_movies/src/provider/movies_provider.dart';
 
 class MovieList extends StatefulWidget {
-  final MovieListBloc bloc;
-
-  MovieList(this.bloc);
-
   @override
   MovieListState createState() {
     return MovieListState();
@@ -26,44 +21,42 @@ class MovieListState extends State<MovieList> {
 
   int _currentIndex = 0;
 
+  MovieListBody _page1;
+  SearchListBody _page2;
+  List<Widget> _pages;
+  Widget _currentPage;
+
+  @override
+  void initState() {
+    _page1 = MovieListBody(
+      mainColor: mainColor,
+    );
+
+    _page2 = SearchListBody();
+
+    _pages = [_page1, _page2];
+
+    _currentPage = _page1;
+
+    super.initState();
+  }
+
   Widget build(BuildContext context) {
+    final bloc = MoviesProvider.of(context).bloc;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0.3,
         centerTitle: true,
         backgroundColor: Colors.white,
-        leading: LoadingInfo(widget.bloc.isLoading),
+        leading: LoadingInfo(bloc.isLoading),
         title: Text(
           'Movies',
           style: TextStyle(color: mainColor, fontFamily: 'Arvo', fontWeight: FontWeight.bold),
         ),
-        actions: <Widget>[
-          Icon(
-            Icons.menu,
-            color: mainColor,
-          )
-        ],
+        actions: <Widget>[Icon(Icons.menu, color: mainColor)],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            MovieTitle(mainColor),
-            Expanded(
-                child: StreamBuilder<UnmodifiableListView<Movie>>(
-              stream: widget.bloc.movies,
-              initialData: UnmodifiableListView<Movie>([]),
-              builder: (context, snapshot) => ListView(
-                    children: snapshot.data.map((movie) {
-                      return _buildItem(movie);
-                    }).toList(),
-                  ),
-            ))
-          ],
-        ),
-      ),
+      body: _currentPage,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         items: [
@@ -72,26 +65,54 @@ class MovieListState extends State<MovieList> {
             icon: Icon(Icons.new_releases),
           ),
           BottomNavigationBarItem(
-            title: Text('Favorites'),
-            icon: Icon(Icons.favorite),
+            title: Text('Search'),
+            icon: Icon(Icons.search),
           )
         ],
         onTap: (index) {
-          if (index == 0) {
-            widget.bloc.moviesType.add(MoviesType.newReleases);
-          } else {
-            widget.bloc.moviesType.add(MoviesType.favorites);
-          }
           setState(() {
             _currentIndex = index;
+            _currentPage = _pages[index];
           });
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.search),
-        onPressed: () {},
+    );
+  }
+}
+
+class MovieListBody extends StatefulWidget {
+  final Color mainColor;
+
+  const MovieListBody({Key key, this.mainColor}) : super(key: key);
+
+  @override
+  _MovieListBodyState createState() => _MovieListBodyState();
+}
+
+class _MovieListBodyState extends State<MovieListBody> {
+  @override
+  Widget build(BuildContext context) {
+    final bloc = MoviesProvider.of(context).bloc;
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          MovieTitle(widget.mainColor),
+          Expanded(
+              child: StreamBuilder<UnmodifiableListView<Movie>>(
+            stream: bloc.movies,
+            initialData: UnmodifiableListView<Movie>([]),
+            builder: (context, snapshot) {
+              return ListView(
+                children: snapshot.data.map((movie) {
+                  return _buildItem(movie);
+                }).toList(),
+              );
+            },
+          ))
+        ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -110,7 +131,7 @@ class MovieListState extends State<MovieList> {
 }
 
 class LoadingInfo extends StatelessWidget {
-  Stream<bool> _isLoading;
+  final Stream<bool> _isLoading;
 
   LoadingInfo(
     this._isLoading, {
@@ -128,73 +149,7 @@ class LoadingInfo extends StatelessWidget {
         } else {
           return Container();
         }
-
       },
-    );
-
-  }
-}
-
-class MovieCell extends StatelessWidget {
-  final Movie movie;
-  final Color mainColor = const Color(0xff3C3261);
-  final imageUrl = 'https://image.tmdb.org/t/p/w500/';
-
-  MovieCell(this.movie);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Row(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(0.0),
-              child: Hero(
-                tag: movie.posterPath,
-                child: Container(
-                  margin: const EdgeInsets.all(16.0),
-                  child: Container(
-                    width: 70.0,
-                    height: 70.0,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    color: Colors.grey,
-                    image: DecorationImage(image: NetworkImage(imageUrl + movie.posterPath), fit: BoxFit.cover),
-                    boxShadow: [BoxShadow(color: mainColor, blurRadius: 5.0, offset: Offset(2.0, 5.0))],
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-                child: Container(
-              margin: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-              child: Column(
-                children: [
-                  Text(
-                    movie.title,
-                    style: TextStyle(fontSize: 20.0, fontFamily: 'Arvo', fontWeight: FontWeight.bold, color: mainColor),
-                  ),
-                  Padding(padding: const EdgeInsets.all(2.0)),
-                  Text(
-                    movie.overview,
-                    maxLines: 3,
-                    style: TextStyle(color: const Color(0xff8785A4), fontFamily: 'Arvo'),
-                  )
-                ],
-                crossAxisAlignment: CrossAxisAlignment.start,
-              ),
-            )),
-          ],
-        ),
-        Container(
-          width: 300.0,
-          height: 0.5,
-          color: const Color(0xD2D2E1ff),
-          margin: const EdgeInsets.all(16.0),
-        )
-      ],
     );
   }
 }
