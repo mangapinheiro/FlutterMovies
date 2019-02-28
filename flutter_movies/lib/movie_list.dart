@@ -133,17 +133,19 @@ class _MovieListBodyState extends State<MovieListBody> {
     );
   }
 
-  notificationListener({MovieListBloc using}) => (Notification notification) {
-        var bloc = using;
-        if (notification is ScrollUpdateNotification) {
-          if (notification.metrics.maxScrollExtent > notification.metrics.pixels &&
-              notification.metrics.maxScrollExtent - notification.metrics.pixels <= 100) {
-            bloc.loadMore.add(null);
-          }
+  NotificationListenerCallback<ScrollNotification> notificationListener({MovieListBloc using}) {
+    return (ScrollNotification notification) {
+      var bloc = using;
+      if (notification is ScrollUpdateNotification) {
+        if (notification.metrics.maxScrollExtent > notification.metrics.pixels &&
+            notification.metrics.maxScrollExtent - notification.metrics.pixels <= 100) {
+          bloc.loadMore.add(null);
         }
+      }
 
-        return true;
-      };
+      return true;
+    };
+  }
 }
 
 class LoadingInfo extends StatelessWidget {
