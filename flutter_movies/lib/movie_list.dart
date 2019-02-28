@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_movies/movie_details.dart';
 import 'package:flutter_movies/src/movie.dart';
 import 'package:flutter_movies/src/movie_cell.dart';
+import 'package:flutter_movies/src/movie_list_bloc.dart';
 import 'package:flutter_movies/src/movies_search.dart';
 import 'package:flutter_movies/src/provider/movies_provider.dart';
 
@@ -94,16 +95,7 @@ class _MovieListBodyState extends State<MovieListBody> {
   Widget build(BuildContext context) {
     final bloc = MoviesProvider.of(context).bloc;
     return NotificationListener(
-      onNotification: (ScrollNotification notification) {
-        if (notification is ScrollUpdateNotification) {
-          if (notification.metrics.maxScrollExtent > notification.metrics.pixels &&
-              notification.metrics.maxScrollExtent - notification.metrics.pixels <= 50) {
-            bloc.loadMore.add(null);
-          }
-        }
-
-        return true;
-      },
+      onNotification: notificationListener(using: bloc),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -140,6 +132,18 @@ class _MovieListBodyState extends State<MovieListBody> {
       },
     );
   }
+
+  notificationListener({MovieListBloc using}) => (ScrollNotification notification) {
+        var bloc = using;
+        if (notification is ScrollUpdateNotification) {
+          if (notification.metrics.maxScrollExtent > notification.metrics.pixels &&
+              notification.metrics.maxScrollExtent - notification.metrics.pixels <= 50) {
+            bloc.loadMore.add(null);
+          }
+        }
+
+        return true;
+      };
 }
 
 class LoadingInfo extends StatelessWidget {
