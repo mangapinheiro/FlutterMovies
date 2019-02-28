@@ -93,25 +93,37 @@ class _MovieListBodyState extends State<MovieListBody> {
   @override
   Widget build(BuildContext context) {
     final bloc = MoviesProvider.of(context).bloc;
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          MovieTitle(widget.mainColor),
-          Expanded(
-              child: StreamBuilder<UnmodifiableListView<Movie>>(
-            stream: bloc.movies,
-            initialData: UnmodifiableListView<Movie>([]),
-            builder: (context, snapshot) {
-              return ListView(
-                children: snapshot.data.map((movie) {
-                  return _buildItem(movie);
-                }).toList(),
-              );
-            },
-          ))
-        ],
+    return NotificationListener(
+      onNotification: (ScrollNotification notification) {
+        if (notification is ScrollUpdateNotification) {
+          if (notification.metrics.maxScrollExtent > notification.metrics.pixels &&
+              notification.metrics.maxScrollExtent - notification.metrics.pixels <= 50) {
+            bloc.loadMore.add(null);
+          }
+        }
+
+        return true;
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            MovieTitle(widget.mainColor),
+            Expanded(
+                child: StreamBuilder<UnmodifiableListView<Movie>>(
+              stream: bloc.movies,
+              initialData: UnmodifiableListView<Movie>([]),
+              builder: (context, snapshot) {
+                return ListView(
+                  children: snapshot.data.map((movie) {
+                    return _buildItem(movie);
+                  }).toList(),
+                );
+              },
+            ))
+          ],
+        ),
       ),
     );
   }

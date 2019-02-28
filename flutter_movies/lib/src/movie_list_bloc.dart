@@ -17,6 +17,8 @@ class MovieListFilterEvent extends MovieListEvent {
 enum MoviesType { newReleases, favorites }
 
 class MovieListBloc {
+  int _currentPage = 1;
+
   Stream<UnmodifiableListView<Movie>> get movies => _moviesSubject.stream;
   final _moviesSubject = BehaviorSubject<UnmodifiableListView<Movie>>();
 
@@ -26,19 +28,15 @@ class MovieListBloc {
   Sink<MoviesType> get moviesType => _moviesTypeController.sink;
   final _moviesTypeController = BehaviorSubject<MoviesType>();
 
+  Sink<void> get loadMore => _loadMoreController.sink;
+  final _loadMoreController = StreamController<void>();
+
   var _movies = <Movie>[];
 
   MovieListBloc() {
     _loadItems('upcoming');
     _moviesTypeController.stream.listen((moviesType) {
-      switch (moviesType) {
-        case MoviesType.favorites:
-          _loadItems('top_rated');
-          break;
-        case MoviesType.newReleases:
-          _loadItems('upcoming');
-          break;
-      }
+      _loadItems(resourceName(moviesType));
     });
 
     _movieListEvents.stream.listen((event) {
@@ -47,17 +45,43 @@ class MovieListBloc {
         print(event.query);
       }
     });
+
+    _loadMoreController.stream.listen((_) {
+      var resource = resourceName(_moviesTypeController.stream.value);
+      _loadItems('upcoming');
+    });
+  }
+
+  resourceName(MoviesType moviesType) {
+    var resource;
+    switch (moviesType) {
+      case MoviesType.favorites:
+        resource = 'top_rated';
+        break;
+      case MoviesType.newReleases:
+        resource = 'upcoming';
+        break;
+    }
+    return resource;
   }
 
   void _loadItems(String resource) async {
+    if (isRequestInProgress) {
+      return;
+    }
+
     _isLoadingSubject.add(true);
-    await _updateMovies(resource);
+    await _updateMovies(resource, _currentPage);
+    _currentPage++;
     _moviesSubject.add(UnmodifiableListView(_movies));
     _isLoadingSubject.add(false);
   }
 
-  Future<Null> _updateMovies(String resource) async {
-    var url = 'https://api.themoviedb.org/3/movie/$resource?api_key=aa0d387e519b001387da127a37f0acd2';
+  bool get isRequestInProgress => _isLoadingSubject.stream.value;
+
+  Future<Null> _updateMovies(String resource, int page) async {
+    var url =
+        'https://api.themoviedb.org/3/movie/$resource?api_key=aa0d387e519b001387da127a37f0acd2&page=${page.toString()}';
     http.Response response = await http.get(url);
 
     var data = json.decode(response.body);
@@ -67,7 +91,7 @@ class MovieListBloc {
       return standardSerializers.deserializeWith(Movie.serializer, json);
     }).toList();
 
-    _movies = movies;
+    _movies.addAll(movies);
   }
 
   StreamController<MovieListEvent> _movieListEvents = StreamController();
@@ -77,5 +101,6 @@ class MovieListBloc {
     _movieListEvents.close();
     _moviesTypeController.close();
     _isLoadingSubject.close();
+    _loadMoreController.close();
   }
 }

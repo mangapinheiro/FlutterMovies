@@ -24,13 +24,16 @@ class _$MovieSerializer implements StructuredSerializer<Movie> {
       'overview',
       serializers.serialize(object.overview,
           specifiedType: const FullType(String)),
-      'poster_path',
-      serializers.serialize(object.posterPath,
-          specifiedType: const FullType(String)),
       'vote_average',
       serializers.serialize(object.voteAverage,
           specifiedType: const FullType(double)),
     ];
+    if (object.posterPath != null) {
+      result
+        ..add('poster_path')
+        ..add(serializers.serialize(object.posterPath,
+            specifiedType: const FullType(String)));
+    }
 
     return result;
   }
@@ -89,9 +92,6 @@ class _$Movie extends Movie {
     }
     if (overview == null) {
       throw new BuiltValueNullFieldError('Movie', 'overview');
-    }
-    if (posterPath == null) {
-      throw new BuiltValueNullFieldError('Movie', 'posterPath');
     }
     if (voteAverage == null) {
       throw new BuiltValueNullFieldError('Movie', 'voteAverage');

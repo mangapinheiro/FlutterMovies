@@ -22,42 +22,31 @@ class MovieCell extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(0.0),
                 child: Hero(
-                  tag: movie.posterPath,
-                  child: Container(
-                    margin: const EdgeInsets.all(16.0),
-                    child: Container(
-                      width: 70.0,
-                      height: 70.0,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: Colors.grey,
-                      image: DecorationImage(image: NetworkImage(imageUrl + movie.posterPath), fit: BoxFit.cover),
-                      boxShadow: [BoxShadow(color: mainColor, blurRadius: 5.0, offset: Offset(2.0, 5.0))],
-                    ),
-                  ),
+                  tag: movie.title,
+                  child: _buildThumbnail(),
                 ),
               ),
               Expanded(
-                  child: Container(
-                margin: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-                child: Column(
-                  children: [
-                    Text(
-                      movie.title,
-                      style:
-                          TextStyle(fontSize: 20.0, fontFamily: 'Arvo', fontWeight: FontWeight.bold, color: mainColor),
-                    ),
-                    Padding(padding: const EdgeInsets.all(2.0)),
-                    Text(
-                      movie.overview,
-                      maxLines: 3,
-                      style: TextStyle(color: const Color(0xff8785A4), fontFamily: 'Arvo'),
-                    )
-                  ],
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Container(
+                  margin: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+                  child: Column(
+                    children: [
+                      Text(
+                        movie.title,
+                        style: TextStyle(
+                            fontSize: 20.0, fontFamily: 'Arvo', fontWeight: FontWeight.bold, color: mainColor),
+                      ),
+                      Padding(padding: const EdgeInsets.all(2.0)),
+                      Text(
+                        movie.overview,
+                        maxLines: 3,
+                        style: TextStyle(color: const Color(0xff8785A4), fontFamily: 'Arvo'),
+                      )
+                    ],
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
                 ),
-              )),
+              ),
             ],
           ),
           Container(
@@ -69,5 +58,29 @@ class MovieCell extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Container _buildThumbnail() {
+    if (movie.posterPath != null) {
+      return Container(
+        width: 90.0,
+        height: 120.0,
+        margin: const EdgeInsets.all(0.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(0.0),
+          color: Colors.grey,
+          image: DecorationImage(image: NetworkImage(imageUrl + movie.posterPath), fit: BoxFit.cover),
+          boxShadow: [BoxShadow(color: mainColor, blurRadius: 3.0, offset: Offset(2.0, 5.0))],
+        ),
+      );
+    } else {
+      return Container(
+        width: 90.0,
+        height: 120.0,
+        child: Center(
+          child: Icon(Icons.image),
+        ),
+      );
+    }
   }
 }

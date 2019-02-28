@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
+
+import 'package:flutter/material.dart';
 
 class MovieDetail extends StatefulWidget {
   final movie;
@@ -24,7 +25,7 @@ class MovieDetailState extends State<MovieDetail> {
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          Image.network(imageUrl + widget.movie.posterPath, fit: BoxFit.cover),
+          _buildBackground(),
           BackdropFilter(
             filter: ui.ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
             child: Container(
@@ -38,26 +39,10 @@ class MovieDetailState extends State<MovieDetail> {
                 child: Column(
                   children: <Widget>[
                     Hero(
-                      tag: widget.movie.posterPath,
+                      tag: widget.movie.title,
                       child: Material(
                         color: Colors.transparent,
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: Stack(
-                            alignment: Alignment.bottomRight,
-                            children: <Widget>[
-                              Container(
-                                width: 400,
-                                height: 400,
-                              ),
-                              FavoriteWidget(),
-                            ],
-                          ),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(image: NetworkImage(imageUrl + widget.movie.posterPath), fit: BoxFit.cover),
-                              boxShadow: [BoxShadow(color: Colors.black, blurRadius: 20, offset: Offset(0, 10))]),
-                        ),
+                        child: Cover(imageUrl: imageUrl, widget: widget),
                       ),
                     ),
                     Container(
@@ -97,8 +82,8 @@ class MovieDetailState extends State<MovieDetail> {
                               Icons.share,
                               color: Colors.white,
                             ),
-                            decoration:
-                                BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: const Color(0xaa3C3261)),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0), color: const Color(0xaa3C3261)),
                           ),
                         ),
                         Padding(
@@ -126,6 +111,55 @@ class MovieDetailState extends State<MovieDetail> {
           )
         ],
       ),
+    );
+  }
+
+  Widget _buildBackground() {
+    if (widget.movie.posterPath == null) {
+      return Container();
+    }
+    return Image.network(imageUrl + widget.movie.posterPath, fit: BoxFit.cover);
+  }
+}
+
+class Cover extends StatelessWidget {
+  const Cover({
+    Key key,
+    @required this.imageUrl,
+    @required this.widget,
+  }) : super(key: key);
+
+  final String imageUrl;
+  final MovieDetail widget;
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.movie.posterPath == null) {
+      return Container(
+        width: 400,
+        height: 400,
+        child: Center(
+          child: Icon(Icons.image),
+        ),
+      );
+    }
+
+    return Container(
+      alignment: Alignment.center,
+      child: Stack(
+        alignment: Alignment.bottomRight,
+        children: <Widget>[
+          Container(
+            width: 400,
+            height: 400,
+          ),
+          FavoriteWidget(),
+        ],
+      ),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          image: DecorationImage(image: NetworkImage(imageUrl + widget.movie.posterPath), fit: BoxFit.cover),
+          boxShadow: [BoxShadow(color: Colors.black, blurRadius: 20, offset: Offset(0, 10))]),
     );
   }
 }
