@@ -6,8 +6,10 @@ import 'package:flutter_movies/movie_details.dart';
 import 'package:flutter_movies/src/movie.dart';
 import 'package:flutter_movies/src/movie_cell.dart';
 import 'package:flutter_movies/src/movie_list_bloc.dart';
-import 'package:flutter_movies/src/movies_search.dart';
+import 'package:flutter_movies/src/movie_search.dart';
+import 'package:flutter_movies/src/movie_search_bloc.dart';
 import 'package:flutter_movies/src/provider/movies_provider.dart';
+import 'package:flutter_movies/src/provider/search_provider.dart';
 
 class MovieList extends StatefulWidget {
   @override
@@ -23,7 +25,7 @@ class MovieListState extends State<MovieList> {
   int _currentIndex = 0;
 
   MovieListBody _page1;
-  SearchListBody _page2;
+  Widget _page2;
   List<Widget> _pages;
   Widget _currentPage;
 
@@ -33,7 +35,7 @@ class MovieListState extends State<MovieList> {
       mainColor: mainColor,
     );
 
-    _page2 = SearchListBody();
+    _page2 = SearchProvider(bloc: SearchMoviesBloc(), child: SearchListBody());
 
     _pages = [_page1, _page2];
 

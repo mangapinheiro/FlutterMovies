@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:convert';
 
-import 'package:flutter_movies/serializers.dart';
+import 'package:flutter_movies/src/data/dependency_injection.dart';
 import 'package:flutter_movies/src/movie.dart';
-import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 
 abstract class MovieListEvent {}
@@ -80,17 +78,7 @@ class MovieListBloc {
   bool get isRequestInProgress => _isLoadingSubject.stream.value;
 
   Future<Null> _updateMovies(String resource, int page) async {
-    var url =
-        'https://api.themoviedb.org/3/movie/$resource?api_key=aa0d387e519b001387da127a37f0acd2&page=${page.toString()}';
-    http.Response response = await http.get(url);
-
-    var data = json.decode(response.body);
-
-    var moviesJson = data['results'] as List;
-    var movies = moviesJson.map((json) {
-      return standardSerializers.deserializeWith(Movie.serializer, json);
-    }).toList();
-
+    final movies = await Injector().movieRepository.fetchMovies(resource, page);
     _movies.addAll(movies);
   }
 

@@ -32,82 +32,92 @@ class MovieDetailState extends State<MovieDetail> {
               color: Colors.black.withOpacity(0.5),
             ),
           ),
-          SafeArea(
-            child: SingleChildScrollView(
-              child: Container(
-                margin: const EdgeInsets.all(20),
-                child: Column(
-                  children: <Widget>[
-                    Hero(
-                      tag: widget.movie.title,
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Cover(imageUrl: imageUrl, widget: widget),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(vertical: 20, horizontal: 0),
-                      child: Row(
+          Column(
+            children: <Widget>[
+              AppBar(
+                title: Text('Detail'),
+                backgroundColor: Colors.transparent,
+              ),
+              Expanded(
+                child: SafeArea(
+                  child: SingleChildScrollView(
+                    child: Container(
+                      margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                      child: Column(
                         children: <Widget>[
-                          Expanded(
-                              child: Text(widget.movie.title,
-                                  style: TextStyle(color: Colors.white, fontSize: 30, fontFamily: 'Arvo'))),
-                          Text(
-                            '${widget.movie.voteAverage}/10',
-                            style: TextStyle(color: Colors.white, fontSize: 20, fontFamily: 'Arvo'),
+                          Hero(
+                            tag: widget.movie.title,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Cover(imageUrl: imageUrl, widget: widget),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.symmetric(vertical: 20, horizontal: 0),
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                    child: Text(widget.movie.title,
+                                        style: TextStyle(color: Colors.white, fontSize: 30, fontFamily: 'Arvo'))),
+                                Text(
+                                  '${widget.movie.voteAverage}/10',
+                                  style: TextStyle(color: Colors.white, fontSize: 20, fontFamily: 'Arvo'),
+                                )
+                              ],
+                            ),
+                          ),
+                          Text(widget.movie.overview, style: TextStyle(color: Colors.white, fontFamily: 'Arvo')),
+                          Padding(padding: const EdgeInsets.all(10.0)),
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                  child: Container(
+                                width: 150.0,
+                                height: 60.0,
+                                alignment: Alignment.center,
+                                child: Text('Rate Movie',
+                                    style: TextStyle(color: Colors.white, fontFamily: 'Arvo', fontSize: 20.0)),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10.0), color: const Color(0xaa3C3261)),
+                              )),
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Container(
+                                  padding: const EdgeInsets.all(16.0),
+                                  alignment: Alignment.center,
+                                  child: Icon(
+                                    Icons.share,
+                                    color: Colors.white,
+                                  ),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10.0), color: const Color(0xaa3C3261)),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(0.0),
+                                child: InkWell(
+                                  onTap: () {},
+                                  child: Container(
+                                    padding: const EdgeInsets.all(16.0),
+                                    alignment: Alignment.center,
+                                    child: Icon(
+                                      Icons.bookmark,
+                                      color: Colors.white,
+                                    ),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10.0), color: const Color(0xaa3C3261)),
+                                  ),
+                                ),
+                              ),
+                            ],
                           )
                         ],
                       ),
                     ),
-                    Text(widget.movie.overview, style: TextStyle(color: Colors.white, fontFamily: 'Arvo')),
-                    Padding(padding: const EdgeInsets.all(10.0)),
-                    Row(
-                      children: <Widget>[
-                        Expanded(
-                            child: Container(
-                          width: 150.0,
-                          height: 60.0,
-                          alignment: Alignment.center,
-                          child: Text('Rate Movie',
-                              style: TextStyle(color: Colors.white, fontFamily: 'Arvo', fontSize: 20.0)),
-                          decoration:
-                              BoxDecoration(borderRadius: BorderRadius.circular(10.0), color: const Color(0xaa3C3261)),
-                        )),
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Container(
-                            padding: const EdgeInsets.all(16.0),
-                            alignment: Alignment.center,
-                            child: Icon(
-                              Icons.share,
-                              color: Colors.white,
-                            ),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0), color: const Color(0xaa3C3261)),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(0.0),
-                          child: InkWell(
-                            onTap: () {},
-                            child: Container(
-                              padding: const EdgeInsets.all(16.0),
-                              alignment: Alignment.center,
-                              child: Icon(
-                                Icons.bookmark,
-                                color: Colors.white,
-                              ),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10.0), color: const Color(0xaa3C3261)),
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
+                  ),
                 ),
               ),
-            ),
+            ],
           )
         ],
       ),
@@ -157,7 +167,7 @@ class Cover extends StatelessWidget {
         ],
       ),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(5),
           image: DecorationImage(image: NetworkImage(imageUrl + widget.movie.posterPath), fit: BoxFit.cover),
           boxShadow: [BoxShadow(color: Colors.black, blurRadius: 20, offset: Offset(0, 10))]),
     );
