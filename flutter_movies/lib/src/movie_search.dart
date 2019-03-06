@@ -40,30 +40,42 @@ class _SearchListBodyState extends State<SearchListBody> {
               },
             ),
           ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                      child: StreamBuilder<UnmodifiableListView<Movie>>(
-                    stream: bloc.movies,
-                    initialData: UnmodifiableListView<Movie>([]),
-                    builder: (context, snapshot) {
-                      return ListView(
-                        controller: _scrollController,
-                        children: snapshot.data.map((movie) {
-                          return _buildItem(movie);
-                        }).toList(),
-                      );
-                    },
-                  ))
-                ],
-              ),
-            ),
+          StreamBuilder<bool>(
+            stream: bloc.isLoading,
+            initialData: true,
+            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+              if (snapshot.data) {
+                return SizedBox(
+                  height: 3,
+                  child: LinearProgressIndicator(),
+                );
+              } else {
+                return SizedBox(
+                  height: 3,
+                );
+              }
+            },
           ),
+          Expanded(child: _buildMoviesList(bloc)),
         ],
+      ),
+    );
+  }
+
+  Padding _buildMoviesList(SearchMoviesBloc bloc) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: StreamBuilder<UnmodifiableListView<Movie>>(
+        stream: bloc.movies,
+        initialData: UnmodifiableListView<Movie>([]),
+        builder: (context, snapshot) {
+          return ListView(
+            controller: _scrollController,
+            children: snapshot.data.map((movie) {
+              return _buildItem(movie);
+            }).toList(),
+          );
+        },
       ),
     );
   }
