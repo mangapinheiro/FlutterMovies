@@ -30,7 +30,7 @@ class SearchMoviesBloc {
   String _query = '';
 
   SearchMoviesBloc() {
-    _movieListEvents.stream.listen((event) {
+    DebounceStreamTransformer(Duration(milliseconds: 500)).bind(_movieListEvents.stream).listen((event) {
       if (event is SearchEvent) {
         print(event.query);
         _query = event.query;
@@ -47,6 +47,12 @@ class SearchMoviesBloc {
 
   void _loadItems(String query) async {
     if (isRequestInProgress) {
+      return;
+    }
+
+    if (query == null || query.isEmpty) {
+      _movies = [];
+      _moviesSubject.add(UnmodifiableListView(_movies));
       return;
     }
 

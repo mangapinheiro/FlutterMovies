@@ -30,7 +30,7 @@ class _SearchListBodyState extends State<SearchListBody> {
               decoration: InputDecoration(
                   focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                   contentPadding: EdgeInsets.all(10)),
-              onSubmitted: (query) {
+              onChanged: (query) {
                 _scrollController.animateTo(
                   0,
                   curve: Curves.easeOut,
