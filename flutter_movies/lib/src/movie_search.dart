@@ -3,9 +3,10 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/movie_details.dart';
 import 'package:flutter_movies/src/movie.dart';
-import 'package:flutter_movies/src/movie_cell.dart';
 import 'package:flutter_movies/src/movie_search_bloc.dart';
 import 'package:flutter_movies/src/provider/search_provider.dart';
+import 'package:flutter_movies/src/widgets/linear_progress_container.dart';
+import 'package:flutter_movies/src/widgets/movie_cell.dart';
 
 class SearchListBody extends StatefulWidget {
   @override
@@ -18,6 +19,7 @@ class _SearchListBodyState extends State<SearchListBody> {
   @override
   Widget build(BuildContext context) {
     final bloc = SearchProvider.of(context).bloc;
+    var themeData = Theme.of(context);
     return NotificationListener(
       onNotification: notificationListener(using: bloc),
       child: Column(
@@ -26,9 +28,11 @@ class _SearchListBodyState extends State<SearchListBody> {
             padding: const EdgeInsets.all(16.0),
             child: TextField(
               autofocus: true,
-              style: Theme.of(context).textTheme.title,
+              style: themeData.textTheme.title,
+              cursorColor: themeData.cursorColor,
               decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  hintText: 'Search movie title',
                   contentPadding: EdgeInsets.all(10)),
               onChanged: (query) {
                 _scrollController.animateTo(
@@ -40,42 +44,29 @@ class _SearchListBodyState extends State<SearchListBody> {
               },
             ),
           ),
-          StreamBuilder<bool>(
-            stream: bloc.isLoading,
-            initialData: true,
-            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-              if (snapshot.data) {
-                return SizedBox(
-                  height: 3,
-                  child: LinearProgressIndicator(),
-                );
-              } else {
-                return SizedBox(
-                  height: 3,
-                );
-              }
-            },
-          ),
           Expanded(child: _buildMoviesList(bloc)),
         ],
       ),
     );
   }
 
-  Padding _buildMoviesList(SearchMoviesBloc bloc) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: StreamBuilder<UnmodifiableListView<Movie>>(
-        stream: bloc.movies,
-        initialData: UnmodifiableListView<Movie>([]),
-        builder: (context, snapshot) {
-          return ListView(
-            controller: _scrollController,
-            children: snapshot.data.map((movie) {
-              return _buildItem(movie);
-            }).toList(),
-          );
-        },
+  Widget _buildMoviesList(SearchMoviesBloc bloc) {
+    return LinearProgressContainer(
+      stream: bloc.isLoading,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: StreamBuilder<UnmodifiableListView<Movie>>(
+          stream: bloc.movies,
+          initialData: UnmodifiableListView<Movie>([]),
+          builder: (context, snapshot) {
+            return ListView(
+              controller: _scrollController,
+              children: snapshot.data.map((movie) {
+                return _buildItem(movie);
+              }).toList(),
+            );
+          },
+        ),
       ),
     );
   }

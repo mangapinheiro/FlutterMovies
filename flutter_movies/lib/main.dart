@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/src/data/dependency_injection.dart';
-import 'package:flutter_movies/src/movie_list.dart';
+import 'package:flutter_movies/src/home_tab_container.dart';
 import 'package:flutter_movies/src/movie_list_bloc.dart';
 import 'package:flutter_movies/src/provider/movies_provider.dart';
 
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MovieList(),
+      home: HomeTabContainer(),
     );
   }
 }
