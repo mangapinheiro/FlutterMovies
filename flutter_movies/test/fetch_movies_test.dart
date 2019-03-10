@@ -1,9 +1,8 @@
-
-import 'package:flutter_movies/json_parsing.dart';
-import 'package:test_api/test_api.dart';
-import 'package:flutter_movies/src/movie.dart';
-import 'package:flutter_movies/serializers.dart';
 import 'dart:convert' as json;
+
+import 'package:flutter_movies/serializers.dart';
+import 'package:flutter_movies/src/data/movie.dart';
+import 'package:test_api/test_api.dart';
 
 void main() {
   test("", () {

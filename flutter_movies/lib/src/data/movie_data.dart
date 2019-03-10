@@ -1,4 +1,4 @@
-import 'package:flutter_movies/src/movie.dart';
+import 'package:flutter_movies/src/data/movie.dart';
 
 abstract class MovieRepository {
   Future<List<Movie>> fetchMovies(String resource, int page);

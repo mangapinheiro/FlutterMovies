@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/movie_details.dart';
-import 'package:flutter_movies/src/movie.dart';
+import 'package:flutter_movies/src/data/movie.dart';
 import 'package:flutter_movies/src/movie_list_bloc.dart';
 import 'package:flutter_movies/src/provider/movies_provider.dart';
 import 'package:flutter_movies/src/widgets/linear_progress_container.dart';

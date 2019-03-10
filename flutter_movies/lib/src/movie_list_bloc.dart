@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:flutter_movies/src/data/movie.dart';
 import 'package:flutter_movies/src/data/movie_data.dart';
-import 'package:flutter_movies/src/movie.dart';
 import 'package:kiwi/kiwi.dart';
 import 'package:rxdart/rxdart.dart';
 

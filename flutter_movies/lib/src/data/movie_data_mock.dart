@@ -1,5 +1,5 @@
+import 'package:flutter_movies/src/data/movie.dart';
 import 'package:flutter_movies/src/data/movie_data.dart';
-import 'package:flutter_movies/src/movie.dart';
 
 class MockMovieRepository implements MovieRepository {
   @override

@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_movies/serializers.dart';
+import 'package:flutter_movies/src/data/movie.dart';
 import 'package:flutter_movies/src/data/movie_data.dart';
-import 'package:flutter_movies/src/movie.dart';
 import 'package:http/http.dart' as http;
 
 class ProdMovieRepository implements MovieRepository {

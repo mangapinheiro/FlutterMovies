@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_movies/src/movie.dart';
+import 'package:flutter_movies/src/data/movie.dart';
 
 class MovieCell extends StatelessWidget {
   final Movie movie;
