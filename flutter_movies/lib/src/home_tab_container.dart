@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_movies/src/data/movie_data.dart';
 import 'package:flutter_movies/src/movie_list.dart';
 import 'package:flutter_movies/src/movie_search.dart';
 import 'package:flutter_movies/src/movie_search_bloc.dart';
 import 'package:flutter_movies/src/provider/movies_provider.dart';
 import 'package:flutter_movies/src/provider/search_provider.dart';
+import 'package:kiwi/kiwi.dart' as kiwi;
 
 class HomeTabContainer extends StatefulWidget {
   @override
@@ -29,7 +31,10 @@ class HomeTabContainerState extends State<HomeTabContainer> {
       mainColor: mainColor,
     );
 
-    _page2 = SearchProvider(bloc: SearchMoviesBloc(), child: SearchListBody());
+    _page2 = SearchProvider(
+      bloc: SearchMoviesBloc(kiwi.Container().resolve<MovieRepository>()),
+      child: SearchListBody(),
+    );
 
     _pages = [_page1, _page2];
 

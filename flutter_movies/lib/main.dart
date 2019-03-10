@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_movies/src/data/dependency_injection.dart';
+import 'package:flutter_movies/src/dependency/injector.dart';
 import 'package:flutter_movies/src/home_tab_container.dart';
 import 'package:flutter_movies/src/movie_list_bloc.dart';
 import 'package:flutter_movies/src/provider/movies_provider.dart';
 
 void main() {
-  Injector.configure(Flavor.prod);
+  setupInjection(Flavor.prod);
   runApp(MoviesProvider(bloc: MovieListBloc(), child: MyApp()));
 }
 

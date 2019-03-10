@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:flutter_movies/src/data/dependency_injection.dart';
+import 'package:flutter_movies/src/data/movie_data.dart';
 import 'package:flutter_movies/src/movie.dart';
+import 'package:kiwi/kiwi.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class MovieListEvent {}
@@ -78,9 +79,11 @@ class MovieListBloc {
   bool get isRequestInProgress => _isLoadingSubject.stream.value;
 
   Future<Null> _updateMovies(String resource, int page) async {
-    final movies = await Injector().movieRepository.fetchMovies(resource, page);
+    final movies = await movieRepository.fetchMovies(resource, page);
     _movies.addAll(movies);
   }
+
+  MovieRepository get movieRepository => Container().resolve<MovieRepository>();
 
   StreamController<MovieListEvent> _movieListEvents = StreamController();
   Sink<MovieListEvent> get moviesEvent => _movieListEvents.sink;

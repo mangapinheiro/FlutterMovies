@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:flutter_movies/src/data/dependency_injection.dart';
+import 'package:flutter_movies/src/data/movie_data.dart';
 import 'package:flutter_movies/src/movie.dart';
+import 'package:kiwi/kiwi.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class MovieSearchEvent {}
@@ -15,6 +16,8 @@ class SearchEvent extends MovieSearchEvent {
 enum MoviesType { newReleases, favorites }
 
 class SearchMoviesBloc {
+  final MovieRepository _repository;
+
   int _currentPage = 1;
 
   Stream<UnmodifiableListView<Movie>> get movies => _moviesSubject.stream;
@@ -29,7 +32,7 @@ class SearchMoviesBloc {
   var _movies = <Movie>[];
   String _query = '';
 
-  SearchMoviesBloc() {
+  SearchMoviesBloc(this._repository) {
     DebounceStreamTransformer(Duration(milliseconds: 500)).bind(_movieListEvents.stream).listen((event) {
       if (event is SearchEvent) {
         print(event.query);
@@ -66,9 +69,11 @@ class SearchMoviesBloc {
   bool get isRequestInProgress => _isLoadingSubject.stream.value;
 
   Future<Null> _updateMovies(String query, int page) async {
-    final movies = await Injector().movieRepository.searchMovies(query, page);
+    final movies = await movieRepository.searchMovies(query, page);
     _movies.addAll(movies);
   }
+
+  MovieRepository get movieRepository => Container().resolve<MovieRepository>();
 
   StreamController<MovieSearchEvent> _movieListEvents = StreamController();
   Sink<MovieSearchEvent> get moviesEvent => _movieListEvents.sink;
